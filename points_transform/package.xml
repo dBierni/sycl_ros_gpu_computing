@@ -3,7 +3,7 @@
 <package format="3">
   <name>points_transform</name>
   <version>0.0.0</version>
-  <description>Points transformation with the ise of GPU computing SYCL</description>
+  <description>Points transformation with the use of GPU computing SYCL</description>
   <maintainer email="biernat.db@gmail.com">db</maintainer>
   <license>FREE</license>
 
@@ -12,12 +12,16 @@
   <test_depend>ament_lint_common</test_depend>
   <build_depend>internal_msgs</build_depend>
   <exec_depend>internal_msgs</exec_depend>
+  <build_depend>sycl_internal</build_depend>
+  <exec_depend>sycl_internal</exec_depend>
 
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
 
+  <member_of_group>rosidl_interface_packages</member_of_group>
+  <exec_depend>rosidl_default_runtime</exec_depend>
   <export>
     <build_type>ament_cmake</build_type>
   </export>

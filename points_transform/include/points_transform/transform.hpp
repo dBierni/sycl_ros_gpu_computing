@@ -1,6 +1,6 @@
-#include <points_transform/sycl_internal.h>
+#include <sycl_internal/sycl_internal.hpp>
 #include <internal_msgs/srv/point_cloud.hpp>
-#include <points_transform/sycl_internal.h>
+#include <rclcpp/rclcpp.hpp>
 
 class TransformServer : public rclcpp::Node {
 public:

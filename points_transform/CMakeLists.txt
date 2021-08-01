@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(points_transform)
-
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
 set(BUILD_CLIENT_TEST_NODE true)
 
 # Default to C99
@@ -12,8 +13,7 @@ endif()
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
-set(CMAKE_C_COMPILER clang)
-set(CMAKE_CXX_COMPILER clang++)
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -24,36 +24,29 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(internal_msgs)
-find_package(PCL)
-find_package(Eigen3)
-
-
-# All stuff related to SYCL
-add_library(sycl_internal STATIC src/sycl_internal.cpp)
-target_compile_options(sycl_internal PUBLIC -fsycl -fsycl-targets=nvptx64-nvidia-cuda-sycldevice)
-target_link_libraries(sycl_internal sycl Eigen3::Eigen ${PCL_LIBRARIES} )
-target_link_options(sycl_internal PUBLIC -fsycl -fsycl-targets=nvptx64-nvidia-cuda-sycldevice)
-ament_target_dependencies(sycl_internal sensor_msgs)
-target_include_directories(sycl_internal
-        PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>)
+find_package(internal_msgs REQUIRED)
+find_package(PCL REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(sycl_internal REQUIRED)
+message("------------")
+message(${CMAKE_CURRENT_SOURCE_DIR})
+message("------------")
 
 # ROS2 Server
 add_library(transformServer STATIC src/transform.cpp)
-target_link_libraries(transformServer sycl_internal )
-ament_target_dependencies(transformServer rclcpp sensor_msgs internal_msgs)
+target_link_libraries(transformServer sycl_internal::sycl_internal)
+ament_target_dependencies(transformServer rclcpp sensor_msgs internal_msgs sycl_internal)
 target_include_directories(transformServer PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
+
 # Node
 add_executable(pointTransformNode src/transform_node.cpp)
-target_link_libraries(pointTransformNode transformServer sycl_internal )
+target_link_libraries(pointTransformNode transformServer)
 #ament_target_dependencies(pointTransformNode rclcpp  sensor_msgs internal_msgs geometry_msgs)
 
-set(INSTALL_TARGETS  ${pointTransformNode} ${sycl_internal} ${transformServer})
+set(INSTALL_TARGETS  ${pointTransformNode} ${transformServer})
 
 # Test ROS2 client
 if(BUILD_CLIENT_TEST_NODE)
