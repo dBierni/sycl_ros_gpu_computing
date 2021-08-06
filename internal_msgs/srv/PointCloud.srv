@@ -1,4 +1,6 @@
 geometry_msgs/Transform transformation
 sensor_msgs/PointCloud2 cloud
+std_msgs/Bool use_gpu
 ---
 sensor_msgs/PointCloud2 cloud
+std_msgs/Int32 time
